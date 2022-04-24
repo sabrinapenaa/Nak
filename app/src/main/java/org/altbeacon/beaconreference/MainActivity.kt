@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.MonitorNotifier
+import android.bluetooth.BluetoothAdapter
 
 class MainActivity : AppCompatActivity() {
     lateinit var beaconListView: ListView

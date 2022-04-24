@@ -6,6 +6,8 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Observer
+import com.parse.Parse
+import com.parse.ParseObject
 import org.altbeacon.beacon.*
 import org.altbeacon.bluetooth.BluetoothMedic
 
@@ -14,7 +16,13 @@ class BeaconReferenceApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
-
+        ParseObject.registerSubclass(MenuItems::class.java)
+        Parse.initialize(
+            Parse.Configuration.Builder(this)
+                .applicationId(("KACOElOVed8aUxS2k3eK48eWbXiVFDXu2LFYT0sV"))
+                .clientKey(("DZIi3pXjY5QAAOAjspmHEjvsVGjyD1u0dD5Wujck"))
+                .server(("https://parseapi.back4app.com"))
+                .build())
         val beaconManager = BeaconManager.getInstanceForApplication(this)
         BeaconManager.setDebug(true)
 
@@ -88,7 +96,7 @@ class BeaconReferenceApplication: Application() {
     fun setupForegroundService() {
         val builder = Notification.Builder(this, "BeaconReferenceApp")
         builder.setSmallIcon(R.drawable.ic_launcher_background)
-        builder.setContentTitle("Scanning for Beacons")
+        builder.setContentTitle("Scanning for Menus")
         val intent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
                 this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_IMMUTABLE
@@ -111,11 +119,18 @@ class BeaconReferenceApplication: Application() {
         else {
             Log.d(TAG, "inside beacon region: "+region)
             sendNotification()
+            goToMenuActivity()
         }
     }
 
+    private fun goToMenuActivity() {
+        val intent = Intent(this@BeaconReferenceApplication, MenuListActivity::class.java)
+        startActivity(intent)
+         //close out login activity
+    }
+
     val centralRangingObserver = Observer<Collection<Beacon>> { beacons ->
-        Log.d(MainActivity.TAG, "Ranged: ${beacons.count()} beacons")
+        Log.d(MainActivity.TAG, "Ranged: ${beacons.count()} menus")
         for (beacon: Beacon in beacons) {
             Log.d(TAG, "$beacon about ${beacon.distance} meters away")
         }
@@ -123,8 +138,8 @@ class BeaconReferenceApplication: Application() {
 
     private fun sendNotification() {
         val builder = NotificationCompat.Builder(this, "beacon-ref-notification-id")
-            .setContentTitle("Beacon Reference Application")
-            .setContentText("A beacon is nearby.")
+            .setContentTitle("Nak Menu Finder")
+            .setContentText("A menu is nearby.")
             .setSmallIcon(R.drawable.ic_launcher_background)
         val stackBuilder = TaskStackBuilder.create(this)
         stackBuilder.addNextIntent(Intent(this, MainActivity::class.java))
